@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Lender - Evaluation Result</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS Styling System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Top Professional Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom py-3">
+        <div class="container-fluid px-md-4">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fa-solid fa-building-columns fs-3 text-primary-light me-2"></i>
+                <span class="navbar-brand-text text-gradient-brand fs-4">Smart Lender</span>
+            </a>
+            
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <div class="theme-switch-wrapper me-2">
+                    <span class="small text-secondary-custom me-2"><i class="fa-solid fa-sun text-warning"></i></span>
+                    <label class="theme-switch" for="themeToggleCheckbox">
+                        <input type="checkbox" id="themeToggleCheckbox" />
+                        <div class="slider"></div>
+                    </label>
+                    <span class="small text-secondary-custom ms-2"><i class="fa-solid fa-moon text-primary-light"></i></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Sidebar Layout Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="sidebar-menu">
+            <div class="mb-4 d-none d-lg-block">
+                <span class="text-secondary-custom small uppercase fw-bold tracking-wider">Navigation</span>
+            </div>
+            
+            <a href="/" class="sidebar-link">
+                <i class="fa-solid fa-house"></i> Home Portal
+            </a>
+            <a href="/predict" class="sidebar-link active">
+                <i class="fa-solid fa-calculator"></i> Loan Evaluation
+            </a>
+            <a href="#" class="sidebar-link disabled text-muted opacity-50">
+                <i class="fa-solid fa-chart-pie"></i> Risk Analytics
+            </a>
+            <a href="#" class="sidebar-link disabled text-muted opacity-50">
+                <i class="fa-solid fa-gears"></i> Settings
+            </a>
+            
+            <div class="mt-auto pt-3 border-top border-secondary-soft d-none d-lg-block">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="stats-badge-soft">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <div class="small fw-semibold text-main">Credit Analyst</div>
+                        <div class="x-small text-secondary-custom">Active Session</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Content Container -->
+        <main class="flex-grow-1 p-4 p-md-5">
+            <div class="container-fluid px-0">
+                
+                <div class="row justify-content-center">
+                    <div class="col-xl-9">
+                        
+                        {% if prediction == 1 %}
+                        <!-- Success Card (Approved State) -->
+                        <div class="card-custom result-card card-approved p-4 p-md-5 text-center mb-4">
+                            <div class="outcome-header-badge badge-success-soft animate-pulse">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <h2 class="fw-bold text-success font-poppins mb-2">Loan Status: Approved</h2>
+                            <p class="text-secondary-custom mx-auto mb-4" style="max-width: 600px;">
+                                Excellent! Based on the AI credit scoring algorithm, the applicant presents strong financial metrics. The loan profile is eligible for automatic approval with minimal default indicators.
+                            </p>
+                            <span class="badge bg-{{ risk_color }}-soft text-{{ risk_color }} px-3 py-2 rounded-pill fw-semibold mb-2">
+                                <i class="fa-solid fa-shield-halved me-1"></i> Risk Assessment: {{ risk_level }}
+                            </span>
+                        </div>
+                        {% else %}
+                        <!-- Failure Card (Rejected State) -->
+                        <div class="card-custom result-card card-rejected p-4 p-md-5 text-center mb-4">
+                            <div class="outcome-header-badge badge-danger-soft animate-pulse">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            </div>
+                            <h2 class="fw-bold text-danger font-poppins mb-2">Loan Status: Rejected</h2>
+                            <p class="text-secondary-custom mx-auto mb-4" style="max-width: 600px;">
+                                Attention. Based on the machine learning evaluation, the loan application carries higher risk. The predictive models indicate a potential risk of default. Double-check the credit records.
+                            </p>
+                            <span class="badge bg-{{ risk_color }}-soft text-{{ risk_color }} px-3 py-2 rounded-pill fw-semibold mb-2">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i> Risk Assessment: {{ risk_level }}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Applicant Data Summary Card -->
+                        <div class="card-custom p-4 p-md-5 mb-5">
+                            <h5 class="fw-bold text-gradient-brand mb-4 border-bottom border-secondary-soft pb-2">
+                                <i class="fa-solid fa-file-lines me-2"></i>Applicant Summary Profile
+                            </h5>
+                            
+                            <div class="row g-4 text-secondary-custom small">
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Applicant Gender:</span> 
+                                    <span class="text-main fw-semibold float-end">{{ inputs.Gender }}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Marital Status:</span> 
+                                    <span class="text-main fw-semibold float-end">{% if inputs.Married == 'Yes' %}Married{% else %}Unmarried{% endif %}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Dependents:</span> 
+                                    <span class="text-main fw-semibold float-end">{{ inputs.Dependents }}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Education:</span> 
+                                    <span class="text-main fw-semibold float-end">{{ inputs.Education }}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Employment:</span> 
+                                    <span class="text-main fw-semibold float-end">{% if inputs.Self_Employed == 'Yes' %}Self-Employed{% else %}Salaried{% endif %}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Credit standing Bureau History:</span> 
+                                    <span class="text-main fw-semibold float-end">{% if inputs.Credit_History == '1.0' %}Good (No Defaults){% else %}Bad (Prior Defaults){% endif %}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Monthly Applicant Income:</span> 
+                                    <span class="text-main fw-semibold float-end">${{ inputs.ApplicantIncome }}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Co-Applicant Monthly Income:</span> 
+                                    <span class="text-main fw-semibold float-end">${{ inputs.CoapplicantIncome }}</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Requested Loan Amount:</span> 
+                                    <span class="text-main fw-semibold float-end">${{ inputs.LoanAmount }}k</span>
+                                </div>
+                                <div class="col-sm-6 border-bottom border-secondary-soft pb-2">
+                                    <span class="fw-medium">Loan Repayment Term:</span> 
+                                    <span class="text-main fw-semibold float-end">{{ inputs.Loan_Amount_Term }} Months</span>
+                                </div>
+                                <div class="col-sm-12">
+                                    <span class="fw-medium">Property Location Area:</span> 
+                                    <span class="text-main fw-semibold float-end">{{ inputs.Property_Area }} Area</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Risk Analysis Dashboard Card -->
+                        <div class="card-custom p-4 p-md-5 mb-5 border-start border-{{ risk_color }} border-4">
+                            <h5 class="fw-bold text-gradient-brand mb-4 border-bottom border-secondary-soft pb-2">
+                                <i class="fa-solid fa-chart-pie me-2"></i>Credit Risk Diagnostics Dashboard
+                            </h5>
+                            
+                            <div class="row g-4 align-items-center mb-4">
+                                <div class="col-md-4 text-center border-end border-secondary-soft">
+                                    <span class="small text-secondary-custom d-block mb-1">Overall Risk Score</span>
+                                    <div class="display-4 fw-bold text-{{ risk_color }}">{{ risk_score }}<span class="small" style="font-size: 1.5rem;">/100</span></div>
+                                    <span class="badge bg-{{ risk_color }}-soft text-{{ risk_color }} px-3 py-1.5 rounded-pill fw-semibold mt-2">
+                                        {{ risk_level }}
+                                    </span>
+                                </div>
+                                <div class="col-md-8 px-md-4">
+                                    <span class="small text-secondary-custom d-block mb-2">Risk Exposure Level</span>
+                                    <div class="progress mb-3" style="height: 12px; background-color: var(--card-bg-darker);">
+                                        <div class="progress-bar bg-{{ risk_color }} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ risk_score }}%;" aria-valuenow="{{ risk_score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <p class="text-secondary-custom small mb-0">
+                                        <strong>Risk Explanation:</strong> 
+                                        {% if risk_level == 'High Risk' %}
+                                            The applicant presents elevated default risk factors. Credit bureau records indicate past defaults or a high debt service exposure relative to monthly incomes, requiring extensive manual auditing.
+                                        {% elif risk_level == 'Medium Risk' %}
+                                            The applicant displays moderate risk metrics. While income limits are stable, secondary risk indicators (such as moderate debt ratios or employment type variations) require secondary officer validation.
+                                        {% else %}
+                                            The applicant qualifies as low risk. The credit history is spotless, financial metrics show ample debt coverage capabilities, and applicant profiles meet all standard guidelines.
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <h6 class="fw-bold text-main mb-3">Individual Risk Factors Breakdown</h6>
+                            <div class="row g-3 text-secondary-custom small">
+                                <!-- Factor 1: Credit History -->
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded border border-secondary-soft bg-card-darker">
+                                        <span class="d-block text-secondary-custom mb-1">Credit History</span>
+                                        <span class="text-main fw-semibold">
+                                            {% if inputs.Credit_History == '1.0' %}
+                                                <i class="fa-solid fa-circle-check text-success me-1"></i> Good Standing (0 pts)
+                                            {% else %}
+                                                <i class="fa-solid fa-circle-exclamation text-danger me-1"></i> Prior Defaults (+40 pts)
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Factor 2: Debt-to-Income (DTI) -->
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded border border-secondary-soft bg-card-darker">
+                                        <span class="d-block text-secondary-custom mb-1">Debt-To-Income</span>
+                                        <span class="text-main fw-semibold">
+                                            {% set app_inc = inputs.ApplicantIncome|float %}
+                                            {% set coapp_inc = inputs.CoapplicantIncome|float %}
+                                            {% set loan_amt_val = inputs.LoanAmount|float %}
+                                            {% set term_val = inputs.Loan_Amount_Term|float %}
+                                            {% set monthly_emi_val = (loan_amt_val * 1000) / term_val %}
+                                            {% set total_inc_val = app_inc + coapp_inc %}
+                                            {% set dti_val = (monthly_emi_val / total_inc_val) * 100 if total_inc_val > 0 else 0 %}
+                                            
+                                            {% if dti_val > 45 %}
+                                                <i class="fa-solid fa-circle-exclamation text-danger me-1"></i> {{ dti_val|round(1) }}% High (+30 pts)
+                                            {% elif dti_val > 35 %}
+                                                <i class="fa-solid fa-circle-exclamation text-warning me-1"></i> {{ dti_val|round(1) }}% Moderate (+15 pts)
+                                            {% else %}
+                                                <i class="fa-solid fa-circle-check text-success me-1"></i> {{ dti_val|round(1) }}% Safe (0 pts)
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Factor 3: Income Level -->
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded border border-secondary-soft bg-card-darker">
+                                        <span class="d-block text-secondary-custom mb-1">Income Level</span>
+                                        <span class="text-main fw-semibold">
+                                            {% if total_inc_val < 2500 %}
+                                                <i class="fa-solid fa-circle-exclamation text-danger me-1"></i> Low Income (+15 pts)
+                                            {% elif total_inc_val < 5000 %}
+                                                <i class="fa-solid fa-circle-exclamation text-warning me-1"></i> Moderate (+5 pts)
+                                            {% else %}
+                                                <i class="fa-solid fa-circle-check text-success me-1"></i> Stable (0 pts)
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Factor 4: Loan Size -->
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded border border-secondary-soft bg-card-darker">
+                                        <span class="d-block text-secondary-custom mb-1">Loan Size Demand</span>
+                                        <span class="text-main fw-semibold">
+                                            {% if loan_amt_val > 300 %}
+                                                <i class="fa-solid fa-circle-exclamation text-danger me-1"></i> High Demand (+15 pts)
+                                            {% elif loan_amt_val > 150 %}
+                                                <i class="fa-solid fa-circle-exclamation text-warning me-1"></i> Moderate (+5 pts)
+                                            {% else %}
+                                                <i class="fa-solid fa-circle-check text-success me-1"></i> Affordable (0 pts)
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Factor 5: Employment Type -->
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded border border-secondary-soft bg-card-darker">
+                                        <span class="d-block text-secondary-custom mb-1">Employment Type</span>
+                                        <span class="text-main fw-semibold">
+                                            {% if inputs.Self_Employed == 'Yes' %}
+                                                <i class="fa-solid fa-business-time text-warning me-1"></i> Self-Employed / Business
+                                            {% else %}
+                                                <i class="fa-solid fa-user-tie text-success me-1"></i> Salaried Employee
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Factor 6: Education -->
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded border border-secondary-soft bg-card-darker">
+                                        <span class="d-block text-secondary-custom mb-1">Education Level</span>
+                                        <span class="text-main fw-semibold">
+                                            {% if inputs.Education == 'Graduate' %}
+                                                <i class="fa-solid fa-graduation-cap text-success me-1"></i> Graduate Degree
+                                            {% else %}
+                                                <i class="fa-solid fa-school text-warning me-1"></i> Non-Graduate
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                            <a href="/predict" class="btn btn-primary-custom btn-lg px-4 py-3">
+                                <i class="fa-solid fa-rotate-left me-2"></i>Evaluate Another Loan
+                            </a>
+                            <a href="/" class="btn btn-outline-custom btn-lg px-4 py-3">
+                                <i class="fa-solid fa-house me-2"></i>Return to Portal Home
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <!-- Custom theme controller -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

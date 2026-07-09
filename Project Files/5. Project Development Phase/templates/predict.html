@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Lender - Loan Decision Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS Styling System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Top Professional Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom py-3">
+        <div class="container-fluid px-md-4">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fa-solid fa-building-columns fs-3 text-primary-light me-2"></i>
+                <span class="navbar-brand-text text-gradient-brand fs-4">Smart Lender</span>
+            </a>
+            
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <div class="theme-switch-wrapper me-2">
+                    <span class="small text-secondary-custom me-2"><i class="fa-solid fa-sun text-warning"></i></span>
+                    <label class="theme-switch" for="themeToggleCheckbox">
+                        <input type="checkbox" id="themeToggleCheckbox" />
+                        <div class="slider"></div>
+                    </label>
+                    <span class="small text-secondary-custom ms-2"><i class="fa-solid fa-moon text-primary-light"></i></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Sidebar Layout Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="sidebar-menu">
+            <div class="mb-4 d-none d-lg-block">
+                <span class="text-secondary-custom small uppercase fw-bold tracking-wider">Navigation</span>
+            </div>
+            
+            <a href="/" class="sidebar-link">
+                <i class="fa-solid fa-house"></i> Home Portal
+            </a>
+            <a href="/predict" class="sidebar-link active" id="sidebarLoanEvalLink">
+                <i class="fa-solid fa-calculator"></i> Loan Evaluation
+            </a>
+            <a href="#" class="sidebar-link" id="sidebarRiskLink">
+                <i class="fa-solid fa-chart-pie"></i> Risk Analytics
+            </a>
+            <a href="#" class="sidebar-link" id="sidebarSettingsLink">
+                <i class="fa-solid fa-gears"></i> Settings
+            </a>
+            
+            <div class="mt-auto pt-3 border-top border-secondary-soft d-none d-lg-block">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="stats-badge-soft">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <div class="small fw-semibold text-main">Credit Analyst</div>
+                        <div class="x-small text-secondary-custom">Active Session</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Form Container -->
+        <main class="flex-grow-1 p-4 p-md-5">
+            <div class="container-fluid px-0">
+                
+                <!-- 1. LOAN EVALUATION SECTION -->
+                <div id="loanEvaluationSection">
+                    <!-- Dashboard Sub-Header / Metrics -->
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
+                        <div>
+                            <h2 class="fw-bold text-main mb-1">Evaluate Applicant Eligibility</h2>
+                            <p class="text-secondary-custom mb-0">Fill in the credit verification data to request model inference.</p>
+                        </div>
+                        <div>
+                            <span class="badge bg-primary-soft text-primary-light px-3 py-2 rounded fw-semibold">
+                                <i class="fa-solid fa-brain me-1"></i> Classifier: XGBoost (v1.7.6)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Input Form Card -->
+                    <div class="card-custom p-4 p-md-5">
+                        <form action="/predict" method="POST" id="predictionForm" class="needs-validation" novalidate>
+                            <h5 class="fw-bold text-gradient-brand mb-4 border-bottom border-secondary-soft pb-2">
+                                <i class="fa-solid fa-user-gear me-2"></i>Applicant Demographics
+                            </h5>
+                            
+                            <div class="row g-4 mb-5">
+                                <!-- Gender -->
+                                <div class="col-md-4">
+                                    <label for="gender" class="form-label">Applicant Gender</label>
+                                    <select class="form-select" id="gender" name="Gender" required>
+                                        <option value="" disabled selected>Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                    <div class="invalid-feedback">Gender is required.</div>
+                                </div>
+
+                                <!-- Married -->
+                                <div class="col-md-4">
+                                    <label for="married" class="form-label">Marital Status</label>
+                                    <select class="form-select" id="married" name="Married" required>
+                                        <option value="" disabled selected>Select Marital Status</option>
+                                        <option value="Yes">Married</option>
+                                        <option value="No">Unmarried</option>
+                                    </select>
+                                    <div class="invalid-feedback">Marital Status is required.</div>
+                                </div>
+
+                                <!-- Dependents -->
+                                <div class="col-md-4">
+                                    <label for="dependents" class="form-label">Dependents</label>
+                                    <select class="form-select" id="dependents" name="Dependents" required>
+                                        <option value="" disabled selected>Select Dependents Count</option>
+                                        <option value="0">0 Dependents</option>
+                                        <option value="1">1 Dependent</option>
+                                        <option value="2">2 Dependents</option>
+                                        <option value="3+">3 or more Dependents</option>
+                                    </select>
+                                    <div class="invalid-feedback">Dependents count is required.</div>
+                                </div>
+
+                                <!-- Education -->
+                                <div class="col-md-6">
+                                    <label for="education" class="form-label">Educational Level</label>
+                                    <select class="form-select" id="education" name="Education" required>
+                                        <option value="" disabled selected>Select Education</option>
+                                        <option value="Graduate">Graduate</option>
+                                        <option value="Not Graduate">Not Graduate</option>
+                                    </select>
+                                    <div class="invalid-feedback">Education level is required.</div>
+                                </div>
+
+                                <!-- Self Employed -->
+                                <div class="col-md-6">
+                                    <label for="self_employed" class="form-label">Employment Type</label>
+                                    <select class="form-select" id="self_employed" name="Self_Employed" required>
+                                        <option value="" disabled selected>Select Employment Status</option>
+                                        <option value="Yes">Self-Employed (Business/Freelance)</option>
+                                        <option value="No">Salaried Employee</option>
+                                    </select>
+                                    <div class="invalid-feedback">Employment type is required.</div>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-bold text-gradient-brand mb-4 border-bottom border-secondary-soft pb-2">
+                                <i class="fa-solid fa-sack-dollar me-2"></i>Financial & Credit Profiles
+                            </h5>
+                            
+                            <div class="row g-4 mb-5">
+                                <!-- Applicant Income -->
+                                <div class="col-md-6">
+                                    <label for="applicant_income" class="form-label">Primary Applicant Monthly Income (<span class="currency-symbol">$</span>)</label>
+                                    <input type="number" class="form-control" id="applicant_income" name="ApplicantIncome" min="1" placeholder="e.g. 5000" required>
+                                    <div class="invalid-feedback">A valid monthly income is required.</div>
+                                </div>
+
+                                <!-- Coapplicant Income -->
+                                <div class="col-md-6">
+                                    <label for="coapplicant_income" class="form-label">Co-Applicant Monthly Income (<span class="currency-symbol">$</span>)</label>
+                                    <input type="number" class="form-control" id="coapplicant_income" name="CoapplicantIncome" min="0" placeholder="Enter 0 if none" required>
+                                    <div class="invalid-feedback">Co-applicant income is required (use 0 if none).</div>
+                                </div>
+
+                                <!-- Loan Amount -->
+                                <div class="col-md-4">
+                                    <label for="loan_amount" class="form-label">Requested Loan Amount (in <span class="currency-symbol">$</span>1,000s)</label>
+                                    <input type="number" class="form-control" id="loan_amount" name="LoanAmount" min="1" placeholder="e.g. 150 for $150k" required>
+                                    <div class="invalid-feedback">Requested loan size is required.</div>
+                                </div>
+
+                                <!-- Loan Amount Term -->
+                                <div class="col-md-4">
+                                    <label for="loan_term" class="form-label">Loan Repayment Term (in Months)</label>
+                                    <input type="number" class="form-control" id="loan_term" name="Loan_Amount_Term" min="12" placeholder="e.g. 360 for 30 years" required>
+                                    <div class="invalid-feedback">Term in months is required.</div>
+                                </div>
+
+                                <!-- Credit History -->
+                                <div class="col-md-4">
+                                    <label for="credit_history" class="form-label">Credit Bureau History Status</label>
+                                    <select class="form-select" id="credit_history" name="Credit_History" required>
+                                        <option value="" disabled selected>Select History Rating</option>
+                                        <option value="1.0">No past defaults / Good standing</option>
+                                        <option value="0.0">Previous defaults / Poor standing</option>
+                                    </select>
+                                    <div class="invalid-feedback">Credit standing rating is required.</div>
+                                </div>
+
+                                <!-- Property Area -->
+                                <div class="col-md-12">
+                                    <label for="property_area" class="form-label">Property Location Type</label>
+                                    <select class="form-select" id="property_area" name="Property_Area" required>
+                                        <option value="" disabled selected>Select Property Location</option>
+                                        <option value="Urban">Urban Area</option>
+                                        <option value="Semiurban">Semi-Urban Area</option>
+                                        <option value="Rural">Rural Area</option>
+                                    </select>
+                                    <div class="invalid-feedback">Property location type is required.</div>
+                                </div>
+                            </div>
+
+                            <!-- Form Submit / Action Buttons -->
+                            <div class="border-top border-secondary-soft pt-4">
+                                <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3">
+                                    <i class="fa-solid fa-circle-check me-2"></i>Evaluate Application Eligibility
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 2. RISK ANALYTICS SECTION -->
+                <div id="riskAnalyticsSection" style="display: none;">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
+                        <div>
+                            <h2 class="fw-bold text-main mb-1">Credit Risk Underwriting Model</h2>
+                            <p class="text-secondary-custom mb-0">Underwriting boundaries and risk parameter weights mapped in the model.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-custom p-4 p-md-5">
+                        <h5 class="fw-bold text-gradient-brand mb-4 border-bottom border-secondary-soft pb-2">
+                            <i class="fa-solid fa-circle-radiation me-2 text-danger"></i>Risk Level Categorization Rules
+                        </h5>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle text-secondary-custom small">
+                                <thead>
+                                    <tr class="text-main">
+                                        <th style="width: 20%;">Risk Rating</th>
+                                        <th style="width: 15%;">Color Indicator</th>
+                                        <th style="width: 45%;">Rule Condition Definition</th>
+                                        <th style="width: 20%;">Standard Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold text-danger">High Risk</td>
+                                        <td><span class="badge bg-danger text-white">Red</span></td>
+                                        <td>
+                                            - Credit History is <strong>Poor / Defaults</strong> (Credit History = 0.0)<br>
+                                            - OR Debt-to-Income (DTI) Ratio is <strong>&gt; 45%</strong><br>
+                                            - OR Low Income (&lt; $2,500) paired with high loan demand (&gt; $150k)
+                                        </td>
+                                        <td><strong>Automatic Rejection</strong> / Audits required</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold text-warning">Medium Risk</td>
+                                        <td><span class="badge bg-warning text-dark">Orange</span></td>
+                                        <td>
+                                            - Moderate DTI (30% to 45%)<br>
+                                            - Moderate incomes with some modifiers
+                                        </td>
+                                        <td>Manual review / Request collateral</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold text-success">Low Risk</td>
+                                        <td><span class="badge bg-success text-white">Green</span></td>
+                                        <td>
+                                            - Good Credit Bureau standing (Credit History = 1.0)<br>
+                                            - AND affordable DTI (&le; 30%)<br>
+                                            - AND Stable Income (&ge; $4,000)
+                                        </td>
+                                        <td><strong>Fast-Track Approval</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. SETTINGS SECTION -->
+                <div id="settingsSection" style="display: none;">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
+                        <div>
+                            <h2 class="fw-bold text-main mb-1">System Settings</h2>
+                            <p class="text-secondary-custom mb-0">Configure dashboard visuals, currencies, and developer indicators.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-custom p-4 p-md-5">
+                        <!-- Success Alert for Saving Settings -->
+                        <div id="settingsAlert" class="alert alert-success d-none mb-4 animate-pulse" role="alert">
+                            <i class="fa-solid fa-circle-check me-2"></i> Settings saved successfully!
+                        </div>
+
+                        <h5 class="fw-bold text-gradient-brand mb-4 border-bottom border-secondary-soft pb-2">
+                            <i class="fa-solid fa-sliders me-2"></i>Global Settings Console
+                        </h5>
+
+                        <div class="row g-4 text-secondary-custom">
+                            <!-- Theme Selection option -->
+                            <div class="col-md-6 border-bottom border-secondary-soft pb-3">
+                                <label class="form-label text-main d-block">Dark Mode Background ("Black Ground")</label>
+                                <span class="small text-secondary-custom d-block mb-2">Enable high contrast dark banking layout.</span>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="settingsThemeToggle">
+                                    <label class="form-check-label" for="settingsThemeToggle">Dark Background Mode</label>
+                                </div>
+                            </div>
+
+                            <!-- Currency Formatting setting -->
+                            <div class="col-md-6 border-bottom border-secondary-soft pb-3">
+                                <label for="currencySelect" class="form-label text-main">Display Currency Symbol</label>
+                                <span class="small text-secondary-custom d-block mb-2">Select unit symbol representing income & loan inputs.</span>
+                                <select class="form-select w-75" id="currencySelect">
+                                    <option value="$">US Dollar ($)</option>
+                                    <option value="€">Euro (€)</option>
+                                    <option value="₹">Indian Rupee (₹)</option>
+                                </select>
+                            </div>
+
+                            <!-- Deployed Model selection indicator -->
+                            <div class="col-md-6 border-bottom border-secondary-soft pb-3">
+                                <label for="modelSelect" class="form-label text-main">Active AI Classifier Model</label>
+                                <span class="small text-secondary-custom d-block mb-2">Select classifier weight set (locked to best XGBoost model).</span>
+                                <select class="form-select w-75" id="modelSelect" disabled>
+                                    <option value="XGBoost" selected>XGBoost Ensemble (90.56% Accuracy)</option>
+                                    <option value="Random Forest">Random Forest (90.48% Accuracy)</option>
+                                    <option value="Decision Tree">Decision Tree (87.88% Accuracy)</option>
+                                    <option value="KNN">K-Nearest Neighbors (85.28% Accuracy)</option>
+                                </select>
+                            </div>
+
+                            <!-- Developer Diagnostic Toggles -->
+                            <div class="col-md-6 border-bottom border-secondary-soft pb-3">
+                                <label class="form-label text-main d-block">Developer Diagnostics console</label>
+                                <span class="small text-secondary-custom d-block mb-2">Toggle diagnostics display.</span>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="settingsStrictValidation" checked>
+                                    <label class="form-check-label" for="settingsStrictValidation">Enable Strict Validation checks</label>
+                                </div>
+                            </div>
+
+                            <!-- Reset / Save System parameters -->
+                            <div class="col-md-12 pt-4 border-top border-secondary-soft mt-3">
+                                <button type="button" class="btn btn-primary-custom px-4 py-2.5 me-2" id="saveSettingsBtn">
+                                    <i class="fa-solid fa-floppy-disk me-1"></i>Save Settings
+                                </button>
+                                <button type="button" class="btn btn-outline-custom text-danger border-danger px-4 py-2.5" id="resetFormSettingsBtn">
+                                    <i class="fa-solid fa-trash-can me-1"></i>Reset Form Selections
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Spinner Loading Overlay when form submits -->
+    <div id="loaderOverlay" class="loader-overlay">
+        <div class="banking-spinner mb-3"></div>
+        <h5 class="fw-bold text-main font-poppins mb-1">Evaluating Creditworthiness</h5>
+        <p class="text-secondary-custom small mb-0">AI engine running inference classifications...</p>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <!-- Custom validation trigger and theme controls -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Custom Bootstrap Form Validations logic
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</body>
+</html>
